@@ -1,32 +1,12 @@
 const router = require("express").Router();
 const multer = require("multer");
 const upload = multer({ dest: "uploads" });
-const Product = require("./model");
-const path = require("path");
-const fs = require("fs");
+const productControllerV4 = require('./controller')
 
-router.get("/product", (req, res) => {
-  Product.find()
-    .then((result) => res.send(result))
-    .catch((error) => res.send(error));
-});
-
-router.post("/product", upload.single("image"), (req, res) => {
-  const { name, price, stock, status } = req.body;
-  const image = req.file;
-  if (image) {
-    const target = path.join(__dirname, "../../uploads", image.originalname);
-    fs.renameSync(image.path, target);
-    Product.create({
-      name,
-      price,
-      stock,
-      status,
-      image_url: `https//localhost:3000/public/${image.originalname}`,
-    })
-      .then((result) => res.send(result))
-      .catch((error) => res.send(error));
-  }
-});
+router.get("/product", productControllerV4.index);
+router.get("/product/:id", productControllerV4.view);
+router.post("/product", upload.single('image'), productControllerV4.store);
+router.put("/product/:id", upload.single("image"), productControllerV4.update);
+router.delete("/product/:id", upload.single("image"), productControllerV4.deleteData);
 
 module.exports = router;
